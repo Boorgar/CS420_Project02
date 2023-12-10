@@ -1,5 +1,5 @@
 # CS420_Project02
-PROJECT 02: LOGICAL AGENT
+PROJECT 02: LOGICAL AGENT  
 A logical agent that navigates through the  Wumpus World. The goal of the project is to set up a program to explore the Wumpus world and get the highest score possible 
 for that world, using either Propositional Logic or First-Order Logic (or both)
 
