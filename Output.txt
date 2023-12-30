@@ -1,0 +1,6 @@
+Size: 4
+World Map:
+A B P B
+S - B -
+W GSB P B
+S - B P

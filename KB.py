@@ -8,7 +8,13 @@ class Pit:
 
     def get_list(self):
         return self.list
-
+    
+    def clear(self, x, y):
+        for index, element in enumerate(self.list):
+            if element == (x, y):
+                self.list.pop(index)
+                break
+            
 
 class Wumpus:
     def __init__(self):
@@ -65,6 +71,15 @@ class knowledge_base:
         for i, j in candidate:
             if not (i, j) in self.path and self.in_board(i, j):
                 self.Wumpus.add(i, j)
+    
+    def add_empty(self, x, y):
+        candidate = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+        for i, j in candidate:
+            if not (i, j) in self.path and self.in_board(i, j):
+                if (i, j) in self.Pit.get_list():
+                    self.Pit.clear(i, j)
+                if (i, j) in self.Wumpus.get_list():
+                    self.Wumpus.clear(i, j)
     
     def can_t_go_further(self, x, y):
         candidate = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]

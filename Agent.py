@@ -1,7 +1,7 @@
 class Agent:
-    def __init__(self):
-        self.x = 0
-        self.y = 0
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
         self.queue = []
         self.actions = []
         self.face = "right"
@@ -59,7 +59,7 @@ class Agent:
                     self.face = "left"
     
     def get_position(self):
-        return self.queue[-1][1]
+        return (self.x, self.y)
     
     def update_position(self, x, y):
         self.add_queue((self.x, self.y), (x, y))
@@ -67,11 +67,15 @@ class Agent:
         self.y = y
 
     def back_to_parent(self):
-        last_element = self.queue[-1]
-        self.x = last_element[0][0]
-        self.y = last_element[0][1]
-        self.queue.pop()
-        return (self.x, self.y)
+        if len(self.queue) > 1:
+            last_element = self.queue[-1]
+            self.x = last_element[0][0]
+            self.y = last_element[0][1]
+            self.queue.pop()
+            return (self.x, self.y)
+        else:
+            self.queue.pop()
+            return(-1, -1)
 
     def add_action(self, x):
         self.actions.append(x)
@@ -81,3 +85,6 @@ class Agent:
 
     def get_queue(self):
         return self.queue
+    
+    def get_face(self):
+        return self.face
