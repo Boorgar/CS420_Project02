@@ -8,9 +8,11 @@ class Solution:
         self.Agent = Agent.Agent(x, y)
         self.KB = KB.knowledge_base(self.room.get_size())
         self.score = 0
+        self.map_history = []
+        self.score_history = []
     
     def is_valid_move(self, x, y):
-        return self.KB.in_board(x, y) and not self.KB.danger(x, y) and not self.KB.in_path(x, y)
+        return self.KB.in_board(x, y) and not self.KB.danger(x, y) and not self.KB.in_path(x, y) 
     
     def is_valid_turn(self, x, y):
         return self.KB.in_board(x, y) and not self.KB.in_path(x, y)
@@ -23,8 +25,10 @@ class Solution:
         else:
             if self.room.is_Treasure(x, y):
                 self.score += 1000
+                self.score_history.append(self.score)
                 self.room.collect_treasure(x, y)
-                print("collect gold")
+                self.KB.add_action_history("Collect gold")
+                self.map_history.append(self.room.get_map())
             if self.room.is_Empty(x, y):
                 self.KB.add_empty(x, y)
             if self.room.is_Breeze(x, y):
@@ -35,40 +39,46 @@ class Solution:
     def move_forward(self, x, y):
         self.Agent.update_position(x, y)
         self.KB.add_path((x, y))
-        self.KB.add(x, y, "Empty")
+        self.KB.add_action("Forward")
         self.score -= 10
+        self.score_history.append(self.score)
+        self.map_history.append(self.room.get_map())
         self.room.update_agent_position(x, y)
-        print("forward")
+        self.KB.add_action_history("Move forward")
     
     def turn(self):
         self.Agent.turn_right()
         (x, y) = self.Agent.move_forward()
         if (self.is_valid_move(x, y)):
-            print("right")
+            self.KB.add_action("Turn Right")
+            self.KB.add_action_history("Turn right")
         else:
             self.Agent.turn_left()
             self.Agent.turn_left()
-            print("left")
+            self.KB.add_action("Turn Left")
+            self.KB.add_action_history("Turn left")
 
         self.room.update_agent_face(self.Agent.get_face())
 
     def turn_without_condition(self):
         self.Agent.turn_right()
         (x, y) = self.Agent.move_forward()
-        if (self.KB.in_board(x, y)):
-            print("right")
+        if self.KB.in_board(x, y):
+            self.KB.add_action_history("Turn Right")
         else:
             self.Agent.turn_left()
             self.Agent.turn_left()
-            print("left")
+            self.KB.add_action_history("Turn left")
 
     def end_game(self):
         (x, y) = self.Agent.get_position()
         if self.room.is_Wumpus(x, y) or self.room.is_Pit(x, y):
             self.score -= 10000
+            self.score_history.append(self.score)
             return True
-        elif self.Agent.get_position == (0, -1):
+        elif self.Agent.get_position() == (0, -1):
             self.score += 10
+            self.score_history.append(self.score)
             return True
         else:
             return False
@@ -76,10 +86,13 @@ class Solution:
 
     def get_solution(self):
         while not self.end_game():
+            self.score_history.append(self.score)
+            self.map_history.append(self.room.get_map())
             (x, y) = self.Agent.get_position()
             self.KB.add_path((x, y))
             self.Agent.add_queue((x, y), (x, y))
-            while len(self.Agent.get_queue()) != 0:
+            self.KB.add_action("Start the game")
+            while len(self.Agent.get_queue()) != 0 and not self.KB.is_empty_action():
                 (x, y) = self.Agent.get_position()
 
                 self.update_perception(x, y)
@@ -89,23 +102,42 @@ class Solution:
                         (i, j) = self.Agent.move_forward()
                         if self.KB.maybe_a_Wumpus(i, j):
                             self.score -= 100
+                            self.score_history.append(self.score)
                             atack_successfully = self.room.Wumpus_take_an_attack(i, j)
                             if atack_successfully:
-                                print("Shoot sucessfully")
+                                self.KB.add_action_history("Shoot successfully")
                                 self.update_perception(x, y, True)
+                                self.map_history.append(self.room.get_map())
                                 self.move_forward(i, j)
+                                self.map_history.append(self.room.get_map())
                             else:
-                                print("Miss!")
+                                self.KB.add_action_history("Miss")
+                                self.map_history.append(self.room.get_map())
                         else:
                             self.turn()
                     else:
-                        parent = self.Agent.back_to_parent()
-                        if parent != (-1, -1):
-                            self.KB.add_path(parent)
-                            self.score -= 10
-                            (x, y) = self.Agent.get_position()
-                            self.room.update_agent_position(x, y)
-                            print("backward")
+                        if self.KB.get_previous_action() == "Turn Left":
+                            self.KB.back_to_previous_action()
+                            self.Agent.turn_right()
+                            self.KB.add_action_history("Turn right")
+                        elif self.KB.get_previous_action() == "Turn Right":
+                            self.KB.back_to_previous_action()
+                            self.Agent.turn_left()
+                            self.KB.add_action_history("Turn left")
+                        else:
+                            self.KB.back_to_previous_action()
+                            parent = self.Agent.back_to_parent()
+                            if parent != (-1, -1):
+                                self.KB.add_path(parent)
+                                self.KB.add_stuck(x, y)
+                                self.score -= 10
+                                self.score_history.append(self.score)
+                                (x, y) = self.Agent.get_position()
+                                self.room.update_agent_position(x, y)
+                                self.map_history.append(self.room.get_map())
+                                self.KB.add_action_history("Move backward")
+                            else:
+                                self.KB.add_stuck(x, y)
                 else:
                     (x, y) = self.Agent.move_forward()
                     if self.is_valid_move(x, y):
@@ -114,10 +146,9 @@ class Solution:
                         self.turn()
             if not self.end_game():
                 (x, y) = self.Agent.get_position()
-                self.KB.add_path((x, y))
-                self.Agent.add_queue((x, y), (x, y))
                 self.turn_without_condition()
                 (x, y) = self.Agent.move_forward()
-                self.move_forward(x, y)
+                if not self.KB.in_path(x, y):
+                    self.move_forward(x, y)
 
-        return (self.KB.get_path() , self.score + 10)
+        return (self.KB.get_path() , self.score, self.KB.get_action_history(), self.map_history, self.score_history)

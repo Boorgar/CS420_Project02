@@ -50,14 +50,33 @@ class knowledge_base:
     def __init__(self, size):
         self.Pit = Pit()
         self.Wumpus = Wumpus()
-        self.KB = []
+        self.action = []
         self.size = size
         self.path = []
+        self.stuck_list = []
+        self.action_history = []
     
-    def add(self, x, y, clause):
-        self.KB.append((x, y , clause))
+    def add_action(self, clause):
+        self.action.append(clause)
+
+    def add_action_history(self, clause):
+        self.action_history.append(clause)
+
+    def get_action_history(self):
+        return self.action_history
+
+    def get_previous_action(self):
+        return self.action[-1]
     
+    def is_empty_action(self):
+        return len(self.action) == 0
+    
+    def back_to_previous_action(self):
+        self.action.pop()
+
     def in_board(self, x, y):
+        if self.totally_stuck():
+            return (x, y) == (0, -1)
         return x >= 0 and y >= 0 and x < self.size and y < self.size
 
     def add_Pit(self, x, y):
@@ -95,11 +114,23 @@ class knowledge_base:
                 return True
         return False
     
+    def add_stuck(self, x, y):
+        for index, element in enumerate(self.path):
+            if element == (x, y):
+                self.stuck_list[index] = True
+
+    def totally_stuck(self):
+        for element in self.stuck_list:
+            if element == False:
+                return False
+        return True
+    
     def danger(self, x, y):
         return (x, y) in self.Pit.get_list() or self.Wumpus.in_Wumpus_list(x, y)
     
     def add_path(self, x):
         self.path.append(x)
+        self.stuck_list.append(False)
     
     def in_path(self, x, y):
         return (x, y) in self.path
