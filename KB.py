@@ -19,15 +19,9 @@ class Pit:
 class Wumpus:
     def __init__(self):
         self.list = []
-        self.count_list = []
     
     def add(self, x, y):
-        if (x, y) in self.list:
-            index = self.list.index((x, y))
-            self.count_list[index] += 1
-        else:
-            self.list.append((x, y))
-            self.count_list.append(1)
+        self.list.append((x, y))
 
     def get_list(self):
         return self.list
@@ -37,10 +31,7 @@ class Wumpus:
             if element == (x, y):
                 break
 
-        self.count_list[index] -= 1
-        if self.count_list[index] == 0:
-            self.list.pop(index)
-            self.count_list.pop(index)
+        self.list.pop(index)
     
     def in_Wumpus_list(self, x, y):
         return (x, y) in self.list
@@ -75,8 +66,8 @@ class knowledge_base:
         self.action.pop()
 
     def in_board(self, x, y):
-        if self.totally_stuck():
-            return (x, y) == (0, -1)
+        if self.totally_stuck() and (x, y) == (0, -1):
+            return True
         return x >= 0 and y >= 0 and x < self.size and y < self.size
 
     def add_Pit(self, x, y):
@@ -88,7 +79,7 @@ class knowledge_base:
     def add_Wumpus(self, x, y):
         candidate = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
         for i, j in candidate:
-            if not (i, j) in self.path and self.in_board(i, j):
+            if not (i, j) in self.path and self.in_board(i, j) and not (i, j) in self.Wumpus.get_list():
                 self.Wumpus.add(i, j)
     
     def add_empty(self, x, y):

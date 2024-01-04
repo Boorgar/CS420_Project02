@@ -93,7 +93,7 @@ class room:
         return False
 
     def update_map_Wumpus_die(self, x, y):
-         self.map[y][x] = "-"
+         self.map[y][x] = ""
          candidate = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
          for i, j in candidate:
             if self.in_board(i, j) and not self.adjent_wumpus(i, j):
@@ -108,7 +108,7 @@ class room:
             elif self.in_board(i, j) and self.map[j][i] == "W":
                 if "P" not in self.map[j][i]:
                     self.map[y][x] += "S"
-         if len(self.map[y][x]) == 1:
+         if len(self.map[y][x]) == 0:
             self.map[y][x] == "-"
 
     def in_board(self, x, y):
@@ -138,7 +138,7 @@ class room:
                                          self.map[k][l] = "S"
                                     else:
                                          self.map[k][l] += "S"
-                  if self.map[i][j] == "A":
+                  if "A" in self.map[i][j] :
                         self.x = j
                         self.y = i
     

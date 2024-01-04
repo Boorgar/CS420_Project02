@@ -20,8 +20,6 @@ class Solution:
     def update_perception(self, x, y, for_attack = False):
         if for_attack == True:
             self.KB.kill_Wumpus(x, y)
-            if self.room.is_Empty(x, y):
-                self.KB.add_empty(x, y)
         else:
             if self.room.is_Treasure(x, y):
                 self.score += 1000
@@ -112,6 +110,7 @@ class Solution:
                                 self.map_history.append(self.room.get_map())
                             else:
                                 self.KB.add_action_history("Miss")
+                                self.turn()
                                 self.map_history.append(self.room.get_map())
                         else:
                             self.turn()
@@ -146,9 +145,16 @@ class Solution:
                         self.turn()
             if not self.end_game():
                 (x, y) = self.Agent.get_position()
-                self.turn_without_condition()
-                (x, y) = self.Agent.move_forward()
-                if not self.KB.in_path(x, y):
-                    self.move_forward(x, y)
+                if self.KB.totally_stuck():
+                    (x, y) = self.Agent.move_forward()
+                    if self.KB.in_board(x, y):
+                        self.move_forward(x, y)
+                    else:
+                        self.turn_without_condition()
+                else:
+                    self.turn_without_condition()
+                    (x, y) = self.Agent.move_forward()
+                    if not self.KB.in_path(x, y):
+                        self.move_forward(x, y)
 
         return (self.KB.get_path() , self.score, self.KB.get_action_history(), self.map_history, self.score_history)
