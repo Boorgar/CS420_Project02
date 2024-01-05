@@ -46,12 +46,26 @@ class knowledge_base:
         self.path = []
         self.stuck_list = []
         self.action_history = []
+        self.path_to_door = []
+        self.action_to_door = []
     
     def add_action(self, clause):
+        if len(self.action_to_door) > 0:
+            self.action_to_door.append(clause)
         self.action.append(clause)
+
+    def add_action_to_door(self, clause):
+        self.action_to_door.append(clause)
 
     def add_action_history(self, clause):
         self.action_history.append(clause)
+    
+    def get_path_to_door(self):
+        return self.path_to_door
+    
+    def update_action(self):
+        for i in self.action_to_door:
+            self.action.append(i)
 
     def get_action_history(self):
         return self.action_history
@@ -119,7 +133,12 @@ class knowledge_base:
     def danger(self, x, y):
         return (x, y) in self.Pit.get_list() or self.Wumpus.in_Wumpus_list(x, y)
     
-    def add_path(self, x):
+    def add_path(self, x, is_stuck):
+        if len(self.path_to_door) > 0:
+            y = self.path_to_door[-1]
+            self.path_to_door.append((y[1], x))
+        if x == (0, 0) and is_stuck == True:
+            self.path_to_door.append(((0, 0), (0, 0)))
         self.path.append(x)
         self.stuck_list.append(False)
     

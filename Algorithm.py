@@ -7,6 +7,7 @@ class Solution:
         (x, y) = self.room.get_agent_position()
         self.Agent = Agent.Agent(x, y)
         self.KB = KB.knowledge_base(self.room.get_size())
+        self.go_to_door = False
         self.score = 0
         self.map_history = []
         self.score_history = []
@@ -36,7 +37,7 @@ class Solution:
         
     def move_forward(self, x, y):
         self.Agent.update_position(x, y)
-        self.KB.add_path((x, y))
+        self.KB.add_path((x, y), False)
         self.KB.add_action("Forward")
         self.score -= 10
         self.score_history.append(self.score)
@@ -87,8 +88,9 @@ class Solution:
             self.score_history.append(self.score)
             self.map_history.append(self.room.get_map())
             (x, y) = self.Agent.get_position()
-            self.KB.add_path((x, y))
-            self.Agent.add_queue((x, y), (x, y))
+            self.KB.add_path((x, y), False)
+            if len(self.KB.get_path_to_door()) == 0:
+                self.Agent.add_queue((x, y), (x, y))
             self.KB.add_action("Start the game")
             while len(self.Agent.get_queue()) != 0 and not self.KB.is_empty_action():
                 (x, y) = self.Agent.get_position()
@@ -127,7 +129,7 @@ class Solution:
                             self.KB.back_to_previous_action()
                             parent = self.Agent.back_to_parent()
                             if parent != (-1, -1):
-                                self.KB.add_path(parent)
+                                self.KB.add_path(parent, True)
                                 self.KB.add_stuck(x, y)
                                 self.score -= 10
                                 self.score_history.append(self.score)
@@ -146,12 +148,22 @@ class Solution:
             if not self.end_game():
                 (x, y) = self.Agent.get_position()
                 if self.KB.totally_stuck():
-                    (x, y) = self.Agent.move_forward()
-                    if self.KB.in_board(x, y):
-                        self.move_forward(x, y)
-                    else:
+                    if (x, y) == (0, 0):
                         self.turn_without_condition()
-                else:
+                        (x, y) = self.Agent.move_forward()
+                        if not self.KB.in_path(x, y):
+                            self.move_forward(x, y)
+                    elif len(self.KB.get_path_to_door()) > 0 and (x,y) != (0, 0):
+                        self.go_to_door = True
+                        for i, j in self.KB.get_path_to_door():
+                            self.Agent.add_queue(i, j)
+                    else:
+                        (x, y) = self.Agent.move_forward()
+                        if self.KB.in_board(x, y):
+                            self.move_forward(x, y)
+                        else:
+                            self.turn_without_condition()
+                elif self.go_to_door == False:
                     self.turn_without_condition()
                     (x, y) = self.Agent.move_forward()
                     if not self.KB.in_path(x, y):
