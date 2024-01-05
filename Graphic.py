@@ -271,13 +271,13 @@ class Graphic:
                     # print(cave_map)
                     self.drawMap(cave_map)
                     pygame.display.update()
-                    pygame.time.delay(10)
+                    pygame.time.delay(200)
                     
                     # Check if last cave map
                     if cave_map == map_history[-1]:
                         self.drawMap(cave_map)
                         pygame.display.update()
-                        pygame.time.delay(100)
+                        pygame.time.delay(300)
                     
                 print("Action history", action_history)
                 print("Score", score)
