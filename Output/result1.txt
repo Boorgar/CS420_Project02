@@ -276,3 +276,4 @@ Turn Right
 Move Backward
 Turn Right
 Move Forward
+Final Score: 6840

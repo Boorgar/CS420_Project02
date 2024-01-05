@@ -130,3 +130,4 @@ Move Forward
 Find new way
 Move Backward
 Move Forward
+Final Score: -5950

@@ -142,3 +142,4 @@ Move Backward
 Find new way
 Turn Right
 Move Forward
+Final Score: 1530

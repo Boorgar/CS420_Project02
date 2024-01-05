@@ -49,12 +49,13 @@ class Graphic:
         self.bg = pygame.transform.scale(self.bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.direct = 3
     
-    def export_result(self, file_path, history):
+    def export_result(self, file_path, history, score):
         try:
             with open(file_path, 'w') as file:
                 file.write(str(len(history)) + '\n')
                 for action in history:
                     file.write(action + '\n')
+                file.write("Final Score: " + str(score) + '\n')
             print(f"Result exported to {file_path}")
         except Exception as e:
             print(f"Error writing to file: {e}")
@@ -210,7 +211,7 @@ class Graphic:
                     
                 agent_path, score, action_history, map_history, score_history = Algorithm.Solution(self.room).get_solution()
 
-                self.export_result(OUTPUT_LIST[self.map_i - 1], action_history)
+                self.export_result(OUTPUT_LIST[self.map_i - 1], action_history, score)
                 
                 file_path = MAP_LIST[self.map_i - 1]
                 with open(file_path, 'r') as file:
