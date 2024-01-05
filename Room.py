@@ -159,4 +159,6 @@ class room:
 
     def update_agent_face(self, face):
          self.face = face
+         
+    
                             
