@@ -71,7 +71,6 @@ RED = (255, 0, 0)
 RUNNING = 'running'
 GAMEOVER = 'gameover'
 WIN = 'win'
-TRYBEST = 'trybest'
 MENU = 'menu'
 
 # Menu Button Position
