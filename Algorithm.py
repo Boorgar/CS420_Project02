@@ -1,5 +1,6 @@
 import Agent
 import KB
+import copy
 
 class Solution:
     def __init__(self, room):
@@ -27,7 +28,7 @@ class Solution:
                 self.score_history.append(self.score)
                 self.room.collect_treasure(x, y)
                 self.KB.add_action_history("Collect Gold")
-                self.map_history.append(self.room.get_map())
+                self.map_history.append(copy.deepcopy(self.room.get_map()))
             if self.room.is_Empty(x, y):
                 self.KB.add_empty(x, y)
             if self.room.is_Breeze(x, y):
@@ -41,8 +42,8 @@ class Solution:
         self.KB.add_action("Forward")
         self.score -= 10
         self.score_history.append(self.score)
-        self.map_history.append(self.room.get_map())
         self.room.update_agent_position(x, y)
+        self.map_history.append(copy.deepcopy(self.room.get_map()))
         self.KB.add_action_history("Move Forward")
     
     def turn(self):
@@ -86,7 +87,7 @@ class Solution:
     def get_solution(self):
         while not self.end_game():
             self.score_history.append(self.score)
-            self.map_history.append(self.room.get_map())
+            self.map_history.append(copy.deepcopy(self.room.get_map()))
             (x, y) = self.Agent.get_position()
             self.KB.add_path((x, y), False)
             if len(self.KB.get_path_to_door()) == 0:
@@ -107,13 +108,13 @@ class Solution:
                             if atack_successfully:
                                 self.KB.add_action_history("Shoot Successfully")
                                 self.update_perception(x, y, True)
-                                self.map_history.append(self.room.get_map())
+                                self.map_history.append(copy.deepcopy(self.room.get_map()))
                                 self.move_forward(i, j)
-                                self.map_history.append(self.room.get_map())
+                                self.map_history.append(copy.deepcopy(self.room.get_map()))
                             else:
                                 self.KB.add_action_history("Miss")
                                 self.turn()
-                                self.map_history.append(self.room.get_map())
+                                self.map_history.append(copy.deepcopy(self.room.get_map()))
                         else:
                             self.turn()
                     else:
@@ -135,7 +136,7 @@ class Solution:
                                 self.score_history.append(self.score)
                                 (x, y) = self.Agent.get_position()
                                 self.room.update_agent_position(x, y)
-                                self.map_history.append(self.room.get_map())
+                                self.map_history.append(copy.deepcopy(self.room.get_map()))
                                 self.KB.add_action_history("Move Backward")
                             else:
                                 self.KB.add_stuck(x, y)
