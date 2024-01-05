@@ -18,7 +18,7 @@ text file such as result1.txt.
 | No |                                                  |     |
 |----|--------------------------------------------------|-----|
 | 1  | Finish problem successfully                      | 50% |
-| 2  | Console screen (CLI) (not doing GUI, screw that) | 10% |
+| 2  | GUI                                              | 10% |
 | 3  | 5 maps with difference structures                | 20% |
 | 4  | Report                                           | 20% |
 

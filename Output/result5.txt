@@ -1,0 +1,26 @@
+25
+Find new way
+Move Forward
+Move Backward
+Turn Left
+Move Forward
+Shoot Successfully
+Move Forward
+Move Forward
+Turn Right
+Move Forward
+Move Forward
+Move Backward
+Turn Right
+Move Forward
+Collect Gold
+Move Backward
+Turn Left
+Move Backward
+Turn Left
+Move Backward
+Move Backward
+Move Backward
+Turn Right
+Turn Right
+Move Forward

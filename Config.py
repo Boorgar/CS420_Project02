@@ -43,19 +43,19 @@ IMG_ARROW_UP = './Assets/Images/arrow_up.png'
 IMG_ARROW_DOWN = './Assets/Images/arrow_down.png'
 
 # Map
-MAP_LIST = ['map1.txt',
-            'map2.txt',
-            'map3.txt',
-            'map4.txt',
-            'map5.txt']
+MAP_LIST = ['./Input/map1.txt',
+            './Input/map2.txt',
+            './Input/map3.txt',
+            './Input/map4.txt',
+            './Input/map5.txt']
 MAP_NUM = len(MAP_LIST)
 
 # Output
-OUTPUT_LIST = ['result1.txt',
-               'result2.txt',
-               'result3.txt',
-               'result4.txt',
-               'result5.txt']
+OUTPUT_LIST = ['./Output/result1.txt',
+               './Output/result2.txt',
+               './Output/result3.txt',
+               './Output/result4.txt',
+               './Output/result5.txt']
 
 # Fonts
 FONT = './Assets/Fonts/Roboto.ttf'

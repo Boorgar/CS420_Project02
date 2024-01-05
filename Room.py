@@ -18,7 +18,7 @@ class room:
             self.y = 0
             self.face = "right"
             self.generate_enviroment()
-            self.print_world_map_to_file(self.size, self.map, "Output.txt")
+            # self.print_world_map_to_file(self.size, self.map, "Output.txt")
 
 
         except FileNotFoundError:

@@ -1,0 +1,144 @@
+143
+Find new way
+Move Forward
+Miss
+Turn Left
+Miss
+Turn Left
+Turn Left
+Shoot Successfully
+Move Forward
+Move Backward
+Turn Right
+Turn Right
+Turn Right
+Move Backward
+Turn Right
+Move Forward
+Move Backward
+Turn Right
+Move Forward
+Move Backward
+Turn Right
+Move Forward
+Move Forward
+Miss
+Turn Left
+Miss
+Turn Left
+Turn Left
+Shoot Successfully
+Move Forward
+Move Forward
+Move Backward
+Turn Left
+Move Forward
+Move Backward
+Turn Right
+Move Backward
+Turn Right
+Turn Right
+Turn Right
+Move Backward
+Turn Left
+Move Forward
+Move Forward
+Move Forward
+Turn Left
+Shoot Successfully
+Move Forward
+Move Forward
+Move Forward
+Turn Left
+Move Forward
+Move Forward
+Move Backward
+Turn Left
+Move Forward
+Collect Gold
+Move Backward
+Turn Right
+Move Backward
+Turn Right
+Move Backward
+Move Backward
+Turn Left
+Move Forward
+Collect Gold
+Move Backward
+Turn Right
+Move Backward
+Turn Left
+Turn Left
+Move Forward
+Shoot Successfully
+Move Forward
+Turn Right
+Move Forward
+Move Backward
+Turn Left
+Move Backward
+Turn Right
+Move Forward
+Move Backward
+Turn Left
+Move Backward
+Turn Right
+Turn Right
+Turn Right
+Move Backward
+Move Backward
+Move Backward
+Turn Left
+Turn Left
+Move Forward
+Collect Gold
+Move Backward
+Turn Right
+Turn Right
+Turn Right
+Move Backward
+Turn Left
+Turn Left
+Turn Left
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Move Backward
+Find new way
+Turn Right
+Move Forward
