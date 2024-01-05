@@ -8,6 +8,16 @@ import Algorithm
 CELL_SIZE = 70
 SPACING = 10
 
+def print_board(map, agent_pos):
+    for i in range(len(map)):
+        for j in range(len(map)):
+            if (i, j) == agent_pos:
+                print("A", end=" ")
+            else:
+                print(map[i][j], end=" ")
+        print()
+    
+
 class Graphic:
     def __init__(self):
         # Init Pygame Assets
@@ -39,6 +49,15 @@ class Graphic:
         self.bg = pygame.transform.scale(self.bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.direct = 3
              
+             
+    def final_score(self, score):
+        self.screen.fill(WHITE)
+        self.screen.blit(self.bg, (0, 0))
+        text = self.victory.render('Your score: ' + str(score), True, BLACK)
+        textRect = text.get_rect()
+        textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.screen.blit(text, textRect)
+        pygame.display.update()
         
         
     def draw_score(self):
@@ -116,32 +135,6 @@ class Graphic:
         pygame.display.update()
             
 
-    def win_draw(self):
-        self.screen.fill(WHITE)
-        self.screen.blit(self.bg, (0, 0))
-
-        if self.state == WIN:
-            text = self.victory.render('VICTORY!!!', True, BLACK)
-        elif self.state == TRYBEST:
-            text = self.victory.render('TRY BEST!!!', True, BLACK)
-
-        textRect = text.get_rect()
-        textRect.center = (500, 50)
-        self.screen.blit(text, textRect)
-        score = self.agent.get_score()
-        text = self.victory.render('Your score: ' + str(score), True, BLACK)
-        textRect.center = (450, 100)
-        self.screen.blit(text, textRect)
-
-    def win_event(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        pygame.display.update()
-        pygame.time.delay(200)
-        self.state = MENU
-
     def drawMap(self, map):
         
         self.screen.fill(WHITE)
@@ -152,16 +145,16 @@ class Graphic:
             for j in range(BOARD_SIZE):
                 if map[i][j] == BREEZE:
                     self.screen.blit(pygame.image.load(IMG_SEEN_CELL), (j * CELL_SIZE, i * CELL_SIZE))
-                    text = self.font.render('Breeze', True, BLACK)
-                    textRect = text.get_rect()
-                    textRect.center = (x + 20, y + 20)
-                    self.screen.blit(text, textRect)
+                    # text = self.noti.render('Breeze', True, BLACK)
+                    # textRect = text.get_rect()
+                    # textRect.center = (x + 20, y + 20)
+                    # self.screen.blit(text, textRect)
                     
                 elif map[i][j] == STENCH:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_SEEN_CELL), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
-                    text = self.font.render('Stench', True, BLACK)
-                    textRect = text.get_rect()
-                    textRect.center = (x + 20, y + 20)
+                    # text = self.noti.render('Stench', True, BLACK)
+                    # textRect = text.get_rect()
+                    # textRect.center = (x + 20, y + 20)
                     
                 elif map[i][j] == PIT:
                     self.screen.blit(pygame.image.load(IMG_PIT), (j * CELL_SIZE, i * CELL_SIZE))
@@ -169,10 +162,18 @@ class Graphic:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_WUMPUS), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
                 elif map[i][j] == GOLD:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_GOLD), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
-                
+                    
+                elif map[i][j] == AGENT:
+                    self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_HUNTER_RIGHT), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
+                else:
+                    self.screen.blit(pygame.image.load(IMG_INITIAL_CELL), (j * CELL_SIZE, i * CELL_SIZE))
+                                    
                
                
     def run(self):
+        
+        
+        
         while True:
 
             # Each if statement is a state of the game
@@ -180,104 +181,110 @@ class Graphic:
                 self.menu_draw()
 
             if self.state == RUNNING:
-                # if self.map_i == 1:
-                #     self.room = Room.room(MAP_LIST[0])
-                # elif self.map_i == 2:
-                #     self.room = Room.room(MAP_LIST[1])
-                # elif self.map_i == 3:
-                #     self.room = Room.room(MAP_LIST[2])
-                # elif self.map_i == 4:
-                #     self.room = Room.room(MAP_LIST[3])
-                # elif self.map_i == 5:
-                #     self.room = Room.room(MAP_LIST[4])
+                
+                if self.map_i == 1:
+                    self.room = Room.room(MAP_LIST[0])
+                elif self.map_i == 2:
+                    self.room = Room.room(MAP_LIST[1])
+                elif self.map_i == 3:
+                    self.room = Room.room(MAP_LIST[2])
+                elif self.map_i == 4:
+                    self.room = Room.room(MAP_LIST[3])
+                elif self.map_i == 5:
+                    self.room = Room.room(MAP_LIST[4])
                     
-                self.room = Room.room("test.txt")
-                
-                
                 agent_path, score, action_history, map_history, score_history = Algorithm.Solution(self.room).get_solution()
-                # Get agent initial position
 
-                file_path = "test.txt"
+                
+                file_path = MAP_LIST[self.map_i - 1]
                 with open(file_path, 'r') as file:
-                    size = int(file.readline().strip())
+                        size = int(file.readline().strip())
+                        global BOARD_SIZE
+                        BOARD_SIZE = size
 
-                    self.world_map = []
-                    for _ in range(size):
-                        line = file.readline().strip()
-                        room_contents = line.split('.')
-                        self.world_map.append(room_contents)
-                self.world_map.reverse()
-                
-                # tmp_pit = []
-                # tmp_wumpus = []
-                # for i in range(size):
-                #     for j in range(size):
-                #         if 'P' in self.world_map[i][j]:
-                #             tmp_pit.append((i, j))
-                #         if 'W' in self.world_map[i][j]:
-                #             tmp_wumpus.append((i, j))
-                #         if 'A' in self.world_map[i][j]:
-                #             agent_x = i
-                #             agent_y = j
+                        self.world_map = []
+                        for _ in range(size):
+                            line = file.readline().strip()
+                            room_contents = line.split('.')
+                            self.world_map.append(room_contents)
                 
                 
-
+                tmp_pit = []
+                tmp_wumpus = []
+                for i in range(len(self.world_map)):
+                    for j in range(len(self.world_map)):
+                        if "P" in self.world_map[i][j]:
+                            tmp_pit.append((i, j))
+                        if "W" in self.world_map[i][j]:
+                            tmp_wumpus.append((i, j))
+                        if "A" in self.world_map[i][j] :
+                            self.world_map[i][j].replace("A", "-")
+                            agent_x = j
+                            agent_y = i
                 
                 
-                # self.map = GameMap((agent_x, agent_y))
-                # self.arrow = Arrow()
-                # self.gold = Gold()
+                self.map = GameMap((agent_x, agent_y))
+                self.arrow = Arrow()
+                self.gold = Gold_Manager()
                 
                 
-                # self.agent = Agent(agent_x, agent_y)
-                # self.agent.load_image()
-                # self.all_sprites = pygame.sprite.Group()
-                # self.all_sprites.add(self.agent)
+                self.agent = Agent(agent_x, agent_y)
+                self.agent.load_image()
+                self.all_sprites = pygame.sprite.Group()
+                self.all_sprites.add(self.agent)
                 
                 
-                # # Iterate through room.map to get all pits and wumpus
-                # for i in range(self.room.size):
-                #     for j in range(self.room.size):
-                #         if self.room.is_Pit(i, j):
-                #             tmp_pit.append((i, j))
-                #         if self.room.is_Wumpus(i, j):
-                #             tmp_wumpus.append((i, j))
-                
-                # Create pit and wumpus objects
-                # self.pit = Pit_Manager(tmp_pit)
-                # self.wumpus = Wumpus_Manager(tmp_wumpus)
+                # Create pit and wumpus objects                
+                self.pit = Pit_Manager(tmp_pit)
+                self.wumpus = Wumpus_Manager(tmp_wumpus)
             
                 
-                # self.draw_score()
-                # pygame.time.delay(100)
+                self.draw_score()
+                pygame.time.delay(100)
+                
                 
                 # for action in action_history:
                     
                 #     print(action)
                 #     self.display_action(action)
                 #     agent_x, agent_y = self.agent.get_pos()
-                #     pygame.time.delay(100)
+                    
+                #     print(agent_x, agent_y)
+                #     print_board(self.world_map, (agent_y, agent_x))
+                    
+                #     pygame.time.delay(10)
                 
-                for path in agent_path:
-                    print(path)
-                    self.drawMap(self.world_map)
-                    # draw agent at path pos
-                    x, y = path
-                    self.screen.blit(pygame.image.load(IMG_HUNTER_RIGHT), (x * CELL_SIZE, y * CELL_SIZE))
+                # for path in agent_path:
+                #     print(path)
+                #     self.drawMap(self.world_map)
+                #     # draw agent at path pos
+                #     x, y = path
+                #     self.screen.blit(pygame.image.load(IMG_HUNTER_RIGHT), (x * CELL_SIZE, y * CELL_SIZE))
+                    
+                    
+                #     print_board(self.world_map, path)
+                    
+                #     pygame.display.update()
+                #     pygame.time.delay(50)
+                
+                for cave_map in map_history:
+                    # print(cave_map)
+                    self.drawMap(cave_map)
                     pygame.display.update()
-                    pygame.time.delay(100)
+                    pygame.time.delay(10)
                     
+                    # Check if last cave map
+                    if cave_map == map_history[-1]:
+                        self.drawMap(cave_map)
+                        pygame.display.update()
+                        pygame.time.delay(100)
                     
-                self.state = WIN
-            if self.state == WIN:
+                print("Action history", action_history)
+                print("Score", score)
+                self.final_score(score)
                 self.state = MENU
             self.clock.tick(60)
                 
-                    
-                    
-                    
-                    
-                    
     def display_action(self, action):
         if action == "Move Forward":
             self.agent.move_forward(self.direct)
@@ -297,6 +304,7 @@ class Graphic:
             self.all_sprites.update()
             self.draw_score()
             self.all_sprites.draw(self.screen)
+            
             temp = self.map.get_discovered()
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
@@ -313,6 +321,7 @@ class Graphic:
             self.all_sprites.update()
             self.draw_score()
             self.all_sprites.draw(self.screen)
+            
             temp = self.map.get_discovered()
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
@@ -331,6 +340,7 @@ class Graphic:
             self.all_sprites.update()
             self.draw_score()
             self.all_sprites.draw(self.screen)
+            
             temp = self.map.get_discovered()
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
@@ -340,7 +350,9 @@ class Graphic:
             self.all_sprites.update()
             self.draw_score()
             self.all_sprites.draw(self.screen)
-            self.gold.gold_collected(self.screen, self.font)
+            x, y = self.agent.get_pos()
+            self.gold.gold_collected(self.screen, self.font, (x,y))
+            
             temp = self.map.get_discovered()
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
@@ -348,23 +360,24 @@ class Graphic:
         elif action == "Shoot Successfully":
             self.agent.shoot()
             self.all_sprites.update()
-            self.draw_score()   
+            self.draw_score()
             self.all_sprites.draw(self.screen)
             i, j = self.agent.get_pos()
             self.arrow.shoot(self.direct, self.screen, i, j)
+            
             temp = self.map.get_discovered()
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
             pygame.display.update()
             
             if self.direct == 0:
-                i -= 1
-            elif self.direct == 1:
-                i += 1
-            elif self.direct == 2:
                 j -= 1
-            elif self.direct == 3:
+            elif self.direct == 1:
                 j += 1
+            elif self.direct == 2:
+                i -= 1
+            elif self.direct == 3:
+                i += 1
             
             
             self.wumpus.wumpus_killed(i, j)
@@ -384,6 +397,7 @@ class Graphic:
             self.all_sprites.draw(self.screen)
             i, j = self.agent.get_pos()
             self.arrow.shoot(self.direct, self.screen, i, j)
+            
             temp = self.map.get_discovered()
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
@@ -397,7 +411,7 @@ class Graphic:
             self.wumpus.update(self.screen, self.noti, temp)
             self.pit.update(self.screen, self.noti, temp)
             pygame.display.update()
-            
+        
 
 
 if __name__ == '__main__':

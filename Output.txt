@@ -1,6 +1,12 @@
-Size: 4
+Size: 10
 World Map:
-A B P B
-S - B -
-W -GSB P B
-S - B P
+A S W S - - G - B P
+B - SB G - - B - - B
+P B P B - B P B - -
+B P B - - - B - - -
+- B - - - - G - - G
+- - - - - - - - - -
+- - - - - - - - - -
+G S G - - - - - - -
+S W S - - B - G - -
+- S G - GB P B - - -

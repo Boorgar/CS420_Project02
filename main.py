@@ -11,5 +11,8 @@ def main():
     print(f"action list: {action}")
     # print(f"map history: {map}")
     # print(f"score history: {score_history}")
+    print(len(map))
+    print(len(action))
+    print(len(path))
 if __name__=="__main__": 
     main() 

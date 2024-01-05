@@ -22,6 +22,7 @@ WUMPUS = 'W'
 GOLD = 'G'
 STENCH = 'S'
 BREEZE = 'B'
+AGENT = 'A'
 
 IMG_PIT = './Assets/Images/pit.png'
 IMG_WUMPUS = './Assets/Images/wumpus.png'
@@ -42,11 +43,11 @@ IMG_ARROW_UP = './Assets/Images/arrow_up.png'
 IMG_ARROW_DOWN = './Assets/Images/arrow_down.png'
 
 # Map
-MAP_LIST = ['./Assets/Input/map_1.txt',
-            './Assets/Input/map_2.txt',
-            './Assets/Input/map_3.txt',
-            './Assets/Input/map_4.txt',
-            './Assets/Input/map_5.txt']
+MAP_LIST = ['map1.txt',
+            'map2.txt',
+            'map3.txt',
+            'map4.txt',
+            'map5.txt']
 MAP_NUM = len(MAP_LIST)
 
 # Output

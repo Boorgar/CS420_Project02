@@ -37,7 +37,7 @@ class GameMap:
 
     def discover_cell(self, pos):
         x, y = pos
-        self.cell_discovered[y][x] = True
+        self.cell_discovered[x][y] = True
 
     def get_discovered(self):
         return self.cell_discovered
@@ -165,11 +165,7 @@ class Wumpus_Manager:
             self.noti[i][j + 1] = False
             
     def wumpus_missed(self, screen, font):
-        text = font.render('Missed!!!', True, BLACK)
-        textRect = text.get_rect()
-        textRect.center = self.pos
-        screen.blit(text, textRect)
-        pygame.display.update()
+        pass
 
     def update(self, screen, font, is_discovered):
         for i in range(self.size):
@@ -185,13 +181,23 @@ class Wumpus_Manager:
         return self.noti[i][j]
 
 
-class Gold:
+class Gold_Manager:
     def __init__(self):
         self.image = pygame.image.load(IMG_GOLD).convert()
         self.image = pygame.transform.scale(self.image, (150,300))
         self.text_pos = (835, 100)
+        self.is_collected = False
+        self.pos_list = []
 
-    def gold_collected(self, screen, font):
+    def gold_collected(self, screen, font, pos):
+        if self.is_collected:
+            return
+        if pos in self.pos_list:
+            return
+        else:
+            self.pos_list.append(pos)
+        
+        self.is_collected = True
         text = font.render('Agent found a gold pile!!!', True, BLACK)
         textRect = text.get_rect()
         textRect.center = self.text_pos
@@ -211,14 +217,14 @@ class Arrow:
             img = pygame.image.load(img_list[i]).convert()
             self.img_list.append(img)
 
-    def shoot(self, direction:str, screen, pos_x, pos_y):
-        if direction == 'up':
+    def shoot(self, direction, screen, pos_x, pos_y):
+        if direction == 0:
             self.shoot_up(screen, pos_x, pos_y)
-        elif direction == 'down':
+        elif direction == 1:
             self.shoot_down(screen, pos_x, pos_y)
-        elif direction == 'left':
+        elif direction == 2:
             self.shoot_left(screen, pos_x, pos_y)
-        elif direction == 'right':
+        elif direction == 3:
             self.shoot_right(screen, pos_x, pos_y)
             
     def shoot_up(self, screen, x, y):
@@ -289,6 +295,24 @@ class Agent(pygame.sprite.Sprite):
         self.image = self.img_list[0]
         return 3
     
+    def turn_around_and_move(self, direct):
+        if direct == 0:
+            self.turn_down()
+            self.move_down()
+            return 1
+        elif direct == 1:
+            self.turn_up()
+            self.move_up()
+            return 0
+        elif direct == 2:
+            self.turn_right()
+            self.move_right()
+            return 3
+        elif direct == 3:
+            self.turn_left()
+            self.move_left()
+            return 2
+    
     def move_forward(self, direct):
         if direct == 0:
             self.move_up()
@@ -318,7 +342,7 @@ class Agent(pygame.sprite.Sprite):
     def move_down(self):
         self.y += self.spacing
         self.score -= 10
-        if self.j < 9:
+        if self.j < BOARD_SIZE:
             self.j += 1
 
     def move_left(self):
@@ -330,7 +354,7 @@ class Agent(pygame.sprite.Sprite):
     def move_right(self):
         self.x += self.spacing
         self.score -= 10
-        if self.i < 9:
+        if self.i < BOARD_SIZE:
             self.i += 1
             
     def update(self):
