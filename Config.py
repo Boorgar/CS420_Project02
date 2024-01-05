@@ -51,11 +51,11 @@ MAP_LIST = ['map1.txt',
 MAP_NUM = len(MAP_LIST)
 
 # Output
-OUTPUT_LIST = ['./Assets/Output/result_1.txt',
-               './Assets/Output/result_2.txt',
-               './Assets/Output/result_3.txt',
-               './Assets/Output/result_4.txt',
-               './Assets/Output/result_5.txt']
+OUTPUT_LIST = ['result1.txt',
+               'result2.txt',
+               'result3.txt',
+               'result4.txt',
+               'result5.txt']
 
 # Fonts
 FONT = './Assets/Fonts/Roboto.ttf'

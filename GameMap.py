@@ -11,7 +11,7 @@ class GameMap:
 
         # Load images for celss with pygame
         self.cell = pygame.image.load(IMG_INITIAL_CELL).convert()
-        self.discovered_cell = pygame.image.load(IMG_DISCOVERED_CELL).convert()
+        self.discovered_cell = pygame.image.load(IMG_SEEN_CELL).convert()
         self.pit = pygame.image.load(IMG_PIT).convert()
 
         # Marking discovered pits

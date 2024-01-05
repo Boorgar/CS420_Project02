@@ -48,7 +48,24 @@ class Graphic:
         self.bg = pygame.image.load('./Assets/Images/cave_background.png').convert()
         self.bg = pygame.transform.scale(self.bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.direct = 3
-             
+    
+    def export_result(self, file_path, history):
+        try:
+            with open(file_path, 'w') as file:
+                file.write(str(len(history)) + '\n')
+                for action in history:
+                    file.write(action + '\n')
+            print(f"Result exported to {file_path}")
+        except Exception as e:
+            print(f"Error writing to file: {e}")
+        
+    def draw_score(self):
+        text = self.font.render('Score: ' + str(self.score), True, BLACK)
+        textRect = text.get_rect()
+        textRect.center = (820, 25)
+        self.screen.blit(text, textRect)
+        pygame.display.update()
+         
              
     def final_score(self, score):
         self.screen.fill(WHITE)
@@ -59,10 +76,6 @@ class Graphic:
         self.screen.blit(text, textRect)
         pygame.display.update()
         
-        
-    def draw_score(self):
-        self.screen.fill(WHITE)
-        self.map.draw(self.screen)
         # text = self.font.render('Your score: ' + str(score_history), True, BLACK)
         # textRect = text.get_rect()
         # textRect.center = (820, 25)
@@ -136,7 +149,7 @@ class Graphic:
             
 
     def drawMap(self, map):
-        
+        map.reverse()
         self.screen.fill(WHITE)
         
         x = SPACING
@@ -145,25 +158,27 @@ class Graphic:
             for j in range(BOARD_SIZE):
                 if map[i][j] == BREEZE:
                     self.screen.blit(pygame.image.load(IMG_SEEN_CELL), (j * CELL_SIZE, i * CELL_SIZE))
-                    # text = self.noti.render('Breeze', True, BLACK)
-                    # textRect = text.get_rect()
-                    # textRect.center = (x + 20, y + 20)
-                    # self.screen.blit(text, textRect)
+                    text = self.noti.render('Breeze', True, BLACK)
+                    textRect = text.get_rect()
+                    textRect.center = (j * CELL_SIZE + CELL_SIZE // 2, i * CELL_SIZE + CELL_SIZE // 2)
+                    self.screen.blit(text, textRect)
                     
-                elif map[i][j] == STENCH:
+                elif STENCH in map[i][j]:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_SEEN_CELL), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
-                    # text = self.noti.render('Stench', True, BLACK)
-                    # textRect = text.get_rect()
-                    # textRect.center = (x + 20, y + 20)
+                    text = self.noti.render('Stench', True, BLACK)
+                    textRect = text.get_rect()
+                    textRect.center = (j * CELL_SIZE + CELL_SIZE // 2, i * CELL_SIZE + CELL_SIZE // 2)
+                    self.screen.blit(text, textRect)
                     
-                elif map[i][j] == PIT:
+                    
+                elif PIT in map[i][j]:
                     self.screen.blit(pygame.image.load(IMG_PIT), (j * CELL_SIZE, i * CELL_SIZE))
-                elif map[i][j] == WUMPUS:
+                elif WUMPUS in map[i][j]:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_WUMPUS), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
-                elif map[i][j] == GOLD:
+                elif GOLD in map[i][j]:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_GOLD), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
                     
-                elif map[i][j] == AGENT:
+                elif AGENT in map[i][j]:
                     self.screen.blit(pygame.transform.scale(pygame.image.load(IMG_HUNTER_RIGHT), (CELL_SIZE, CELL_SIZE)), (j * CELL_SIZE, i * CELL_SIZE))
                 else:
                     self.screen.blit(pygame.image.load(IMG_INITIAL_CELL), (j * CELL_SIZE, i * CELL_SIZE))
@@ -195,6 +210,7 @@ class Graphic:
                     
                 agent_path, score, action_history, map_history, score_history = Algorithm.Solution(self.room).get_solution()
 
+                self.export_result(OUTPUT_LIST[self.map_i - 1], action_history)
                 
                 file_path = MAP_LIST[self.map_i - 1]
                 with open(file_path, 'r') as file:
@@ -238,8 +254,8 @@ class Graphic:
                 self.pit = Pit_Manager(tmp_pit)
                 self.wumpus = Wumpus_Manager(tmp_wumpus)
             
-                
-                self.draw_score()
+                self.screen.fill(WHITE)
+                self.screen.blit(self.bg, (0, 0))
                 pygame.time.delay(100)
                 
                 
@@ -267,17 +283,106 @@ class Graphic:
                 #     pygame.display.update()
                 #     pygame.time.delay(50)
                 
+                
+                i_counter = 1
+                j_counter = 0
                 for cave_map in map_history:
+                    # Check if last cave map
+                    if cave_map == map_history[-1]:
+                        pygame.time.delay(100)
+                        break
+                        
+                    tmp_action = action_history[j_counter]
+                    
+                    
+                    # Exhaust all the turning
+                    while tmp_action == "Turn Right" or tmp_action == "Turn Left":
+                        if j_counter < len(action_history) - 1:
+                            j_counter += 1
+                        tmp_action = action_history[j_counter]
+                        if tmp_action == "Turn Right":
+                            if self.direct == 0:
+                                self.direct = self.agent.turn_right()
+                            if self.direct == 1:
+                                self.direct = self.agent.turn_left()
+                            if self.direct == 2:
+                                self.direct = self.agent.turn_up()
+                            if self.direct == 3:
+                                self.direct = self.agent.turn_down()
+                            self.all_sprites.update()
+                            self.draw_score()
+                            self.all_sprites.draw(self.screen)
+                            pygame.display.update()
+                            
+                        if tmp_action == "Turn Left":
+                            if self.direct == 0:
+                                self.direct = self.agent.turn_left()
+                            if self.direct == 1:
+                                self.direct = self.agent.turn_right()
+                            if self.direct == 2:
+                                self.direct = self.agent.turn_down()
+                            if self.direct == 3:
+                                self.direct = self.agent.turn_up()
+                            self.all_sprites.update()
+                            self.draw_score()
+                            self.all_sprites.draw(self.screen)
+                            pygame.display.update()
+                    
+
+                    
+                    if tmp_action == "Move Forward":
+                        text = self.font.render('Agent Move Forward', True, BLACK)
+                        textRect = text.get_rect()
+                        textRect.center = (820, 100)
+                        self.screen.blit(text, textRect)
+                        pygame.display.update()
+                        if j_counter < len(action_history) - 1:
+                            j_counter += 1
+                        
+                    elif tmp_action == "Move Backward":
+                        text = self.font.render('Agent Move Backward', True, BLACK)
+                        textRect = text.get_rect()
+                        textRect.center = (820, 100)
+                        self.screen.blit(text, textRect)
+                        pygame.display.update()
+                        if j_counter < len(action_history) - 1:
+                            j_counter += 1
+                        
+                    elif tmp_action == "Shoot Successfully":
+                        text = self.font.render('Agent Shoot Successfully', True, BLACK)
+                        textRect = text.get_rect()
+                        textRect.center = (820, 100)
+                        self.screen.blit(text, textRect)
+                        pygame.display.update()
+                        
+                        if self.direct == 0:
+                            j -= 1
+                        elif self.direct == 1:
+                            j += 1
+                        elif self.direct == 2:
+                            i -= 1
+                        elif self.direct == 3:
+                            i += 1
+                            
+                        self.arrow.shoot(self.direct, self.screen, i, j)
+                        if j_counter < len(action_history) - 1:
+                            j_counter += 1                       
+                    else:
+                        if j_counter < len(action_history) - 1:
+                            j_counter += 1
+                        pass    
+                    
+                    
+                    self.score = score_history[i_counter]
+                    if i_counter < len(score_history) - 1:
+                        i_counter += 1
+                    self.draw_score()
                     # print(cave_map)
                     self.drawMap(cave_map)
                     pygame.display.update()
-                    pygame.time.delay(200)
+                    pygame.time.delay(10)
                     
-                    # Check if last cave map
-                    if cave_map == map_history[-1]:
-                        self.drawMap(cave_map)
-                        pygame.display.update()
-                        pygame.time.delay(300)
+                    
                     
                 print("Action history", action_history)
                 print("Score", score)
@@ -412,7 +517,6 @@ class Graphic:
             self.pit.update(self.screen, self.noti, temp)
             pygame.display.update()
         
-
 
 if __name__ == '__main__':
     graphic = Graphic()
