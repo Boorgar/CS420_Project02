@@ -93,6 +93,7 @@ class Solution:
             if len(self.KB.get_path_to_door()) == 0:
                 self.Agent.add_queue((x, y), (x, y))
             self.KB.add_action("Start the game")
+            self.KB.add_action_history("Find new way")
             while len(self.Agent.get_queue()) != 0 and not self.KB.is_empty_action():
                 (x, y) = self.Agent.get_position()
 
